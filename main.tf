@@ -26,3 +26,14 @@ resource "azurerm_resource_group" "this" {
   name     = "${var.labelPrefix}-A05-RG"
   location = var.region
 }
+
+# -------------------
+# Public IP
+# -------------------
+resource "azurerm_public_ip" "this" {
+  name                = "${var.labelPrefix}-pip"
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+  allocation_method   = "Dynamic"
+  sku                 = "Basic"
+}
