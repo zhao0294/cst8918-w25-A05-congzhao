@@ -108,3 +108,21 @@ resource "azurerm_network_interface" "this" {
 
   network_security_group_id = azurerm_network_security_group.this.id
 }
+
+# -------------------
+# cloud-init script for Apache installation
+# -------------------
+data "template_file" "init" {
+  template = file("${path.module}/init.sh")
+}
+
+data "cloudinit_config" "config" {
+  gzip          = false
+  base64_encode = false
+
+  part {
+    filename     = "init.sh"
+    content_type = "text/x-shellscript"
+    content      = data.template_file.init.rendered
+  }
+}
