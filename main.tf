@@ -126,3 +126,37 @@ data "cloudinit_config" "config" {
     content      = data.template_file.init.rendered
   }
 }
+
+# -------------------
+# Linux Virtual Machine
+# -------------------
+resource "azurerm_linux_virtual_machine" "this" {
+  name                  = "${var.labelPrefix}-vm"
+  resource_group_name   = azurerm_resource_group.this.name
+  location              = azurerm_resource_group.this.location
+  size                  = "Standard_B1s"
+  admin_username        = var.admin_username
+  network_interface_ids = [azurerm_network_interface.this.id]
+
+  disable_password_authentication = true
+
+  admin_ssh_key {
+    username   = var.admin_username
+    public_key = file(var.ssh_public_key)
+  }
+
+  os_disk {
+    name                 = "${var.labelPrefix}-osdisk"
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "20_04-lts"
+    version   = "latest"
+  }
+
+  custom_data = data.cloudinit_config.config.rendered
+}
