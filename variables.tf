@@ -4,10 +4,12 @@ variable "labelPrefix" {
 }
 
 variable "region" {
+  type    = string
   default = "eastus"
 }
 
 variable "admin_username" {
+  type    = string
   default = "azureadmin"
 }
 
