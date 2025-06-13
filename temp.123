@@ -1,0 +1,57 @@
+package test
+
+import (
+	"fmt"
+	"os"
+	"testing"
+
+	"github.com/gruntwork-io/terratest/modules/azure"
+	"github.com/gruntwork-io/terratest/modules/ssh"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestAzureVMWebServer(t *testing.T) {
+	t.Parallel()
+
+	terraformOptions := &terraform.Options{
+		TerraformDir: "../",
+	}
+
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	publicIP := terraform.Output(t, terraformOptions, "public_ip")
+	resourceGroup := terraform.Output(t, terraformOptions, "resource_group_name")
+
+	subscriptionID := os.Getenv("ARM_SUBSCRIPTION_ID")
+	require.NotEmpty(t, subscriptionID)
+
+	vmList := azure.ListVirtualMachinesForResourceGroup(t, resourceGroup, subscriptionID)
+	require.Greater(t, len(vmList), 0, "No VM found in resource group")
+
+	privateKeyBytes, err := os.ReadFile(os.ExpandEnv("$HOME/.ssh/id_rsa"))
+	require.NoError(t, err)
+
+	keyPair := ssh.KeyPair{
+		PrivateKey: string(privateKeyBytes),
+	}
+
+	vmSSH := ssh.Host{
+		Hostname:    publicIP,
+		SshUserName: "azureadmin",
+		SshKeyPair:  &keyPair,
+	}
+
+	// 验证 Apache 是否运行
+	output, err := ssh.CheckSshCommandE(t, vmSSH, "curl -I http://localhost")
+	require.NoError(t, err)
+	assert.Contains(t, output, "200 OK")
+
+	psOutput, err := ssh.CheckSshCommandE(t, vmSSH, "ps -ef | grep apache2")
+	require.NoError(t, err)
+	assert.Contains(t, psOutput, "apache2")
+
+	fmt.Println("✅ Apache is running and accessible.")
+}

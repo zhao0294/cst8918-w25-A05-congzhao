@@ -59,7 +59,7 @@ resource "azurerm_subnet" "this" {
 }
 
 # -------------------
-# Network Security Group (NSG)
+# Network Security Group (NSG) with SSH and HTTP rules
 # -------------------
 resource "azurerm_network_security_group" "this" {
   name                = "${var.labelPrefix}-nsg"
@@ -106,16 +106,16 @@ resource "azurerm_network_interface" "this" {
     public_ip_address_id          = azurerm_public_ip.this.id
   }
 
+}
+
+resource "azurerm_network_interface_security_group_association" "this" {
+  network_interface_id      = azurerm_network_interface.this.id
   network_security_group_id = azurerm_network_security_group.this.id
 }
 
 # -------------------
-# cloud-init script for Apache installation
+# cloud-init script to install Apache
 # -------------------
-data "template_file" "init" {
-  template = file("${path.module}/init.sh")
-}
-
 data "cloudinit_config" "config" {
   gzip          = false
   base64_encode = false
@@ -123,12 +123,12 @@ data "cloudinit_config" "config" {
   part {
     filename     = "init.sh"
     content_type = "text/x-shellscript"
-    content      = data.template_file.init.rendered
+    content      = file("${path.module}/init.sh")
   }
 }
 
 # -------------------
-# Linux Virtual Machine
+# Linux Virtual Machine (Ubuntu 20.04)
 # -------------------
 resource "azurerm_linux_virtual_machine" "this" {
   name                  = "${var.labelPrefix}-vm"
@@ -151,12 +151,12 @@ resource "azurerm_linux_virtual_machine" "this" {
     storage_account_type = "Standard_LRS"
   }
 
-  source_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "20_04-lts"
-    version   = "latest"
-  }
+source_image_reference {
+  publisher = "Canonical"
+  offer     = "0001-com-ubuntu-server-focal"
+  sku       = "20_04-lts"
+  version   = "latest"
+}
 
-  custom_data = data.cloudinit_config.config.rendered
+  custom_data = base64encode(data.cloudinit_config.config.rendered)
 }
