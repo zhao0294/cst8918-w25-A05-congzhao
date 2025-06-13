@@ -9,7 +9,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
 )
 
-// ListVirtualMachinesForResourceGroup 返回指定订阅和资源组中的所有虚拟机名称
+// ListVirtualMachinesForResourceGroup retrieves a list of virtual machine names in the specified resource group and subscription.
 func ListVirtualMachinesForResourceGroup(resourceGroup, subscriptionID string) ([]string, error) {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -41,7 +41,7 @@ func ListVirtualMachinesForResourceGroup(resourceGroup, subscriptionID string) (
 	return vmNames, nil
 }
 
-// GetVirtualMachineNics 查询指定订阅和资源组里某虚拟机关联的NIC名称列表
+// GetVirtualMachineNics retrieves the names of network interfaces (NICs) associated with a specified virtual machine.
 func GetVirtualMachineNics(subscriptionID, resourceGroup, vmName string) ([]string, error) {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
@@ -68,7 +68,7 @@ func GetVirtualMachineNics(subscriptionID, resourceGroup, vmName string) ([]stri
 		if nicRef.ID == nil {
 			continue
 		}
-		// nicRef.ID 格式: /subscriptions/{sub}/resourceGroups/{rg}/providers/Microsoft.Network/networkInterfaces/{nicName}
+		// nicRef.ID format: /subscriptions/{sub}/resourceGroups/{rg}/providers/Microsoft.Network/networkInterfaces/{nicName}
 		parts := strings.Split(*nicRef.ID, "/")
 		if len(parts) > 0 {
 			nicName := parts[len(parts)-1]
@@ -79,7 +79,7 @@ func GetVirtualMachineNics(subscriptionID, resourceGroup, vmName string) ([]stri
 	return nicNames, nil
 }
 
-// VMImage 结构体用于描述虚拟机镜像信息
+// VMImage struct represents the image information of a virtual machine.
 type VMImage struct {
 	Publisher string
 	Offer     string
@@ -87,7 +87,7 @@ type VMImage struct {
 	Version   string
 }
 
-// GetVirtualMachineImage 查询指定 VM 使用的镜像信息
+// GetVirtualMachineImage retrieves the image reference of a specified virtual machine.
 func GetVirtualMachineImage(subscriptionID, resourceGroup, vmName string) (*VMImage, error) {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {

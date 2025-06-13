@@ -1,14 +1,16 @@
 # CST8918 Lab5 & Lab6 Key Operations and Common Issues
 
 ## Table of Contents
-- [Lab5 Overview](#lab5-overview)
-- [Lab5 Key Steps](#lab5-key-steps)
-- [Lab5 Common Issues & Solutions](#lab5-common-issues--solutions)
-- [Lab6 Overview](#lab6-overview)
-- [Lab6 Key Steps](#lab6-key-steps)
-- [Lab6 Common Issues & Solutions](#lab6-common-issues--solutions)
-- [Environment Setup](#environment-setup)
-- [References](#references)
+- [CST8918 Lab5 \& Lab6 Key Operations and Common Issues](#cst8918-lab5--lab6-key-operations-and-common-issues)
+  - [Table of Contents](#table-of-contents)
+  - [Lab5 Overview](#lab5-overview)
+  - [Lab5 Key Steps](#lab5-key-steps)
+  - [Lab5 Common Issues \& Solutions](#lab5-common-issues--solutions)
+  - [Lab6 Overview](#lab6-overview)
+  - [Lab6 Key Steps](#lab6-key-steps)
+  - [Lab6 Common Issues \& Solutions](#lab6-common-issues--solutions)
+  - [Environment Setup](#environment-setup)
+  - [References](#references)
 
 ---
 
@@ -82,5 +84,4 @@
 
 ---
 
-*Author: Cong Zhao  
 Date: 2025-06-13*
